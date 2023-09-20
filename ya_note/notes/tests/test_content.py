@@ -26,24 +26,24 @@ class TestRoutes(TestCase):
         )
 
     def test_page_list(self):
-        adress = reverse('notes:list')
+        url = reverse('notes:list')
         user_note = (
             (self.author_client, True),
             (self.reader_client, False)
         )
-        for key, value in user_note:
-            with self.subTest(key=key, value=value):
-                response = key.get(adress)
+        for client, result in user_note:
+            with self.subTest(key=client, value=result):
+                response = client.get(url)
                 object_list = response.context['object_list']
-                self.assertIs(self.note in object_list, value)
+                self.assertIs(self.note in object_list, result)
 
     def test_authorized_client_has_form(self):
         adress = (
             ('notes:add', None),
             ('notes:edit', (self.note.slug,)),
         )
-        for key, value in adress:
-            with self.subTest(key):
-                url = reverse(key, args=value)
+        for client, result in adress:
+            with self.subTest(client):
+                url = reverse(client, args=result)
                 response = self.author_client.get(url)
                 self.assertIn('form', response.context)

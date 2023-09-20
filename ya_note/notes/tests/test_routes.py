@@ -1,4 +1,5 @@
 from http import HTTPStatus
+
 from django.test import TestCase
 from django.urls import reverse
 from django.contrib.auth import get_user_model
@@ -54,6 +55,11 @@ class TestRoutes(TestCase):
                 self.assertEqual(response.status_code, HTTPStatus.OK)
 
     def test_availability_for_comment_edit_and_delete(self):
+        '''
+        Страницы отдельной заметки, удаления
+        и редактирования заметки доступны
+        только автору заметки
+        '''
         user_statuses = (
             (self.author_client, HTTPStatus.OK),
             (self.reader_client, HTTPStatus.NOT_FOUND),
@@ -71,6 +77,14 @@ class TestRoutes(TestCase):
                     self.assertEqual(response.status_code, status)
 
     def test_redirect_for_anonymous_client(self):
+        '''
+        При попытке перейти на страницу списка заметок,
+        страницу успешного добавления записи,
+        страницу добавления заметки,
+        отдельной заметки, редактирования или
+        удаления заметки анонимный пользователь
+        перенаправляется на страницу логина
+        '''
         login_url = reverse('users:login')
         adress = (
             ('notes:edit', (self.note.slug,)),
